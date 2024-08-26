@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product['name'] }} Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #f9f9f9;
+            color: #333333;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .product-header h1 {
+            font-size: 28px;
+        }
+
+        .state-select {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .state-select select {
+            padding: 5px;
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+
+        .trend-section {
+            margin-bottom: 50px;
+        }
+
+        .trend-section h2 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .chart-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-price {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .price-details {
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: right;
+            margin-top: 50px;
+        }
+
+        .footer small {
+            color: #999999;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #cccccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .navbar {
+            background-color: #1f1f1f;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background-color: #e0e0e0;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-logo img {
+            width: 50px;
+            height: auto;
+            margin-right: 1rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .navbar ul li {
+            display: inline;
+        }
+
+        .navbar ul li a {
+            color: black;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: inline-block;
+        }
+
+        .navbar ul li a.active {
+            background-color: #ff9800;
+            border-radius: 4px;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #ffb74d;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Logo Section -->
+        <div class="navbar-logo">
+            <img src="{{ url_for('static', filename='img/logo.jpg') }}">
+            <h1 style="color: black;">HargaBarangNow 2.0</h1>
+        </div>
+
+        <nav class="navbar">
+            <ul>
+                <li><a href="{{ url_for('index') }}" class="nav-link">Home</a></li>
+                <li><a href="" class="nav-link active">Item</a></li>
+                <li><a href="{{ url_for('dataset') }}" class="nav-link">Dataset</a></li>
+                <li><a href="{{ url_for('about') }}" class="nav-link">About</a></li>
+            </ul>
+
+        </nav>
+
+
+        <!-- State Selector -->
+        <div class="state-select">
+            <label for="state">Select State:</label>
+            <select id="state" onchange="updateState()">
+                <option value="Johor" {% if product['state']=='Johor' %}selected{% endif %}>Johor</option>
+                <option value="Kedah" {% if product['state']=='Kedah' %}selected{% endif %}>Kedah</option>
+                <option value="Kelantan" {% if product['state']=='Kelantan' %}selected{% endif %}>Kelantan</option>
+                <option value="Melaka" {% if product['state']=='Melaka' %}selected{% endif %}>Melaka</option>
+                <!-- Add other states here -->
+            </select>
+        </div>
+
+        <header class="product-header">
+            <div>
+                <h1>{{ product['name'] }}</h1>
+                <h2 id="state-name">{{ product['state'] }} <span style="color: #0f0;">({{ product['price_change']
+                        }})</span></h2>
+            </div>
+            <div>
+                <h1 id="price">{{ product['price'] }}</h1>
+            </div>
+        </header>
+
+        <!-- Predict Future Trend -->
+        <section class="trend-section">
+            <h2>Predict Future Trend</h2>
+            <div class="chart-container">
+                <img id="future-trend-chart" src="{{ url_for('static', filename=product['future_trend_chart']) }}"
+                    alt="Predict Future Trend">
+            </div>
+        </section>
+
+        <!-- Detect Unusual Trend -->
+        <section class="trend-section">
+            <h2>Detect Unusual Trend</h2>
+            <div class="chart-container">
+                <img id="unusual-trend-chart1" src="{{ url_for('static', filename=product['unusual_trend_chart1']) }}"
+                    alt="Detect Unusual Trend 1">
+                <img id="unusual-trend-chart2" src="{{ url_for('static', filename=product['unusual_trend_chart2']) }}"
+                    alt="Detect Unusual Trend 2">
+            </div>
+            <div class="history-price">
+                <h3>Unusual Price</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Price (RM)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="unusual-price-list">
+                        {% for price in product['unusual_prices'] %}
+                        <tr>
+                            <td>{{ price['date'] }}</td>
+                            <td>{{ price['price'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Price Comparison -->
+        <section class="trend-section">
+            <h2>Price Comparison Across States</h2>
+            <div class="chart-container">
+                <img id="price-comparison-chart"
+                    src="{{ url_for('static', filename=product['price_comparison_chart']) }}" alt="Price Comparison">
+            </div>
+            <div class="history-price">
+                <h3>History Price</h3>
+                <p id="highest-price">Highest Price: {{ product['highest_price'] }}</p>
+                <p id="lowest-price">Lowest Price: {{ product['lowest_price'] }}</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <small>Data last updated: August 2024</small>
+        </footer>
+    </div>
+
+    <script>
+        // Automatically set Johor as the default selected state if not already specified
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const stateSelect = document.getElementById('state');
+            if (!stateSelect.value) {
+                stateSelect.value = 'Johor';  // Default to Johor
+                updateState();
+            }
+        });
+
+        function updateState() {
+            var state = document.getElementById("state").value;
+            window.location.href = "/product/{{ product['name'] }}/" + state;
+        }
+    </script>
+</body>
+
+</html>

@@ -40,7 +40,7 @@
                 {% for item in items %}
                 <div class="item-card">
                     <h2>{{ item['item_name'] }}</h2>
-                    <h3 class="price">RM{{ item['state'][0][1] | float | round(2) }}</h3>
+                    <h3 class="price" style="color: green">RM{{ item['state'][0][1] | float | round(2) }}</h3>
                     <ul>
                         {% for state, state_price in item['state'] %}
                             <li>{{ state }}: RM{{ state_price | float | round(2) }}</li>
@@ -56,34 +56,50 @@
             <h2>Trending</h2>
             <div class="trend-container">
                 <div class="trend-card">
-                    <h3>AYAM BERSIH - STANDARD</h3>
-                    <p class="price-increase">12% <i class="fas fa-arrow-up"></i></p> <!-- Green arrow for increase -->
-                    <button>Watch Market</button>
+                    <a href="/product/AYAM%20BERSIH%20-%20STANDARD/Johor" style="text-decoration: none; color: inherit;">
+                        <h3>AYAM BERSIH - STANDARD</h3>
+                        <p class="price-increase">12% <i class="fas fa-arrow-up"></i></p> <!-- Green arrow for increase -->
+                        <button>Watch Market</button>
+                    </a>
                 </div>
                 <div class="trend-card">
-                    <h3>GULA PUTIH</h3>
-                    <p class="price-increase">8% <i class="fas fa-arrow-up"></i></p> <!-- Green arrow for increase -->
-                    <button>Watch Market</button>
+                    <a href="/product/BAWANG%20BESAR%20IMPORT%20(INDIA)/Johor" style="text-decoration: none; color: inherit;">
+                        <h3>BAWANG BESAR IMPORT (INDIA)</h3>
+                        <p class="price-increase">8% <i class="fas fa-arrow-up"></i></p> <!-- Green arrow for increase -->
+                        <button>Watch Market</button>
+                    </a>
                 </div>
                 <div class="trend-card">
-                    <h3>MINYAK MASAK</h3>
-                    <p class="price-increase">5% <i class="fas fa-arrow-up"></i></p> <!-- Green arrow for increase -->
-                    <button>Watch Market</button>
+                    <a href="/product/CILI%20KERING%20KERINTING%20(BERTANGKAI%20OR%20TIDAK%20BERTANGKAI)/Johor" style="text-decoration: none; color: inherit;">
+                        <h3>CILI KERING KERINTING (BERTANGKAI OR TIDAK BERTANGKAI)
+                        </h3>
+                        <p class="price-increase">5% <i class="fas fa-arrow-up"></i></p> <!-- Green arrow for increase -->
+                        <button>Watch Market</button>
+                    </a>
                 </div>
                 <div class="trend-card">
-                    <h3>SAYURAN KAMPUNG</h3>
-                    <p class="price-decrease">3% <i class="fas fa-arrow-down"></i></p> <!-- Red arrow for decrease -->
-                    <button>Watch Market</button>
+                    <a href="/product/TELUR%20AYAM%20GRED%20A/Johor" style="text-decoration: none; color: inherit;">
+
+                        <h3>TELUR AYAM GRED A</h3>
+                        <p class="price-decrease">3% <i class="fas fa-arrow-down"></i></p> <!-- Red arrow for decrease -->
+                        <button>Watch Market</button>
+                    </a>
                 </div>
                 <div class="trend-card">
-                    <h3>Durian</h3>
-                    <p class="price-decrease">13% <i class="fas fa-arrow-down"></i></p> <!-- Red arrow for decrease -->
-                    <button>Watch Market</button>
+                    <a href="/product/SANTAN%20KELAPA%20SEGAR%20(PEKAT)/Johor" style="text-decoration: none; color: inherit;">
+
+                        <h3>SANTAN KELAPA SEGAR (PEKAT)
+                        </h3>
+                        <p class="price-decrease">13% <i class="fas fa-arrow-down"></i></p> <!-- Red arrow for decrease -->
+                        <button>Watch Market</button>
+                    </a>
                 </div>
                 <div class="trend-card">
-                    <h3>ROTI GARDINIA</h3>
-                    <p class="price-decrease">30% <i class="fas fa-arrow-down"></i></p> <!-- Red arrow for decrease -->
-                    <button>Watch Market</button>
+                    <a href="/product/IKAN%20KEMBUNG%20(ANTARA%208%20HINGGA%2012%20EKOR%20SEKILOGRAM)/Johor" style="text-decoration: none; color: inherit;">
+                        <h3>IKAN KEMBUNG (ANTARA 8 HINGGA 12 EKOR SEKILOGRAM)</h3>
+                        <p class="price-decrease">30% <i class="fas fa-arrow-down"></i></p> <!-- Red arrow for decrease -->
+                        <button>Watch Market</button>
+                    </a>
                 </div>
             </div>
         </section>
@@ -234,4 +250,8 @@
         }
     </script>
 </body>
+
+<footer>
+    <p class="update-info">Last updated: August 26, 2024</p>
+</footer>
 </html>
