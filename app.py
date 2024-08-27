@@ -30,7 +30,20 @@ def index():
     }
     for item_name, data in aggregated_items.items()
 ]
-    return render_template('index.html', items=processed_items)
+    
+    # Read the CSV file for percentage increments
+    percentage_increments = {}
+    with open('dataset/percentage_increments.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        
+        # Store percentage increments for each item in a dictionary
+        for row in reader:
+            item_name = row['Item']
+            increment = float(row['Percentage Increment'])
+            percentage_increments[item_name] = increment
+
+    # Render the HTML page with both processed items and percentage increments
+    return render_template('index.html', items=processed_items, increments=percentage_increments)
 
 @app.route('/item')
 def item():
