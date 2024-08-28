@@ -42,8 +42,56 @@ def index():
             increment = float(row['Percentage Increment'])
             percentage_increments[item_name] = increment
 
+    itemAll = []
+    with open('dataset/all premise latest price.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+
+        for row in reader:
+            item = row['item']
+            price = float(row['price'])
+            state = row['state']
+            premise = row['premise']
+
+            itemAll.append({
+                'item': item,
+                'price': price,
+                'state': state,
+                'premise': premise
+            })
+    
+    raw_food_items = []
+    processed_food_items = []
+
+    # Read the CSV file and classify food items as raw or processed
+    with open('dataset/all premise latest price.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+
+        for row in reader:
+            item = row['item']
+            price = float(row['price'])
+            state = row['state']
+            premise = row['premise']
+            item_category = row['item_group']  # Assuming there's a column for item category
+            growth = float(row.get('growth', 0))  # Get growth percentage if available
+            
+            item_data = {
+                'item': item,
+                'price': price,
+                'state': state,
+                'premise': premise,
+                'growth': growth
+            }
+
+            # Classify into raw food and processed food
+            if item_category == 'BARANGAN SEGAR':  # Example category for raw food
+                raw_food_items.append(item_data)
+            elif item_category == 'BARANGAN BERBUNGKUS':  # Processed food or other categories
+                processed_food_items.append(item_data)
+
+    all_unique_items = list(set([item['item'] for item in raw_food_items + processed_food_items]))
+
     # Render the HTML page with both processed items and percentage increments
-    return render_template('index.html', items=processed_items, increments=percentage_increments)
+    return render_template('index.html', items=processed_items, increments=percentage_increments, itemAll=itemAll, raw_food_items=raw_food_items, processed_food_items=processed_food_items, all_unique_items=all_unique_items)
 
 @app.route('/item')
 def item():
@@ -60,7 +108,7 @@ def item():
     with open('dataset/52 processed food list.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            processed_items.append({"name": row['item']})  # Assuming 'item_name' is the column storing item names
+            processed_items.append({"name": row['item'], "url": "/product/"+row['item']+"/Johor"})  # Assuming 'item_name' is the column storing item names
 
     # Get 'show_all' parameters from the query string for both raw and processed items
     raw_food_list_show_all = request.args.get('raw_show_all', 'false') == 'true'

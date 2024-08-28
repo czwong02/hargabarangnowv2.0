@@ -66,7 +66,10 @@
                 {% for item in processed_items %}
                 <div class="trend-card">
                     <h3>{{ item['name'] }}</h3>
-                    <button>Watch Market</button>
+                    <a href="{{ item['url'] }}" style="text-decoration: none; color: inherit;">
+
+                        <button>Watch Market</button>
+                    </a>
                 </div>
                 {% endfor %}
             </div>

@@ -278,6 +278,13 @@ ul li {
 }
 
 .tab-content {
+    max-height: 400px; /* Set a maximum height for each tab */
+    overflow-y: auto; /* Enable vertical scrolling only for the tab content */
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.tab-content:not(.active) {
     display: none;
 }
 
@@ -383,4 +390,42 @@ footer {
 
 .developer-profile p {
     margin: 5px 0 0;
+}
+
+.select-box {
+    width: 250px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+/* Add some styling when the select box is focused */
+.select-box:focus {
+    border-color: #007bff;
+}
+
+/* Hover effect for the select box */
+.select-box:hover {
+    border-color: #007bff;
+}
+
+/* Customize the dropdown options */
+.select-box option {
+    padding: 10px;
+    background-color: white;
+    color: #333;
+}
+
+/* Style the container if necessary */
+.select-box-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
