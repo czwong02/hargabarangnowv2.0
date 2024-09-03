@@ -200,11 +200,15 @@
         <header class="product-header">
             <div>
                 <h1>{{ product['name'] }}</h1>
-                <h2 id="state-name">{{ product['state'] }} <span style="color: rgb(74, 201, 74);">({{ product['price_change']
-                        }})</span></h2>
+                <h2 id="state-name">
+                    {{ product['state'] }}
+                    <span style="color: {% if product['price_change']|float < 0 %}red{% else %}rgb(74, 201, 74){% endif %};">
+                        ({{ product['price_change'] | float | round(2) }}%)
+                    </span>
+                </h2>
             </div>
             <div>
-                <h1 id="price">{{ product['price'] }}</h1>
+                <h1 id="price">RM{{ product['price'] | float | round(2) }}</h1>
             </div>
         </header>
 
@@ -223,8 +227,6 @@
             <div class="chart-container">
                 <img id="unusual-trend-chart1" src="{{ url_for('static', filename=product['unusual_trend_chart1']) }}"
                     alt="Detect Unusual Trend 1">
-                <img id="unusual-trend-chart2" src="{{ url_for('static', filename=product['unusual_trend_chart2']) }}"
-                    alt="Detect Unusual Trend 2">
             </div>
             <div class="history-price">
                 <h3>Unusual Price</h3>
@@ -238,8 +240,8 @@
                     <tbody id="unusual-price-list">
                         {% for price in product['unusual_prices'] %}
                         <tr>
-                            <td>{{ price['date'] }}</td>
-                            <td>{{ price['price'] }}</td>
+                            <td>{{ price['date'] | float | round(2) }}</td>
+                            <td>{{ price['price'] | float | round(2) }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -249,15 +251,19 @@
 
         <!-- Price Comparison -->
         <section class="trend-section">
+            <h2>History Price</h2>
+            <div class="history-price">
+                <p id="highest-price">Highest Price: RM{{ product['highest_price'] | float | round(2) }}</p>
+                <p id="lowest-price">Lowest Price: RM{{ product['lowest_price'] | float | round(2) }}</p>
+            </div>
+        </section>
+
+        <!-- Price Comparison -->
+        <section class="trend-section">
             <h2>Price Comparison Across States</h2>
             <div class="chart-container">
                 <img id="price-comparison-chart"
                     src="{{ url_for('static', filename=product['price_comparison_chart']) }}" alt="Price Comparison">
-            </div>
-            <div class="history-price">
-                <h3>History Price</h3>
-                <p id="highest-price">Highest Price: {{ product['highest_price'] }}</p>
-                <p id="lowest-price">Lowest Price: {{ product['lowest_price'] }}</p>
             </div>
         </section>
 

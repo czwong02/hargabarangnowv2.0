@@ -152,23 +152,43 @@ def product_details(food_item, state):
     return render_template('product.html', product=product_data)
     
 def get_product_data(food_item, state):
-    # Example logic to retrieve product details for the selected item and state
-    return {
-        'name': food_item,
-        'state': state,
-        'price': 'RM 8.24',
-        'price_change': '+12%',
-        'highest_price': 'RM 11.64',
-        'lowest_price': 'RM 6.61',
-        'unusual_prices': [
-            {'date': '10/01/2020', 'price': '50.32'},
-            {'date': '15/01/2020', 'price': '48.89'},
-        ],
-        'future_trend_chart': f'predict_future_trend_{state.lower()}.png',
-        'unusual_trend_chart1': f'detect_unusual_trend1_{state.lower()}.png',
-        'unusual_trend_chart2': f'detect_unusual_trend2_{state.lower()}.png',
-        'price_comparison_chart': f'price_comparison_across_states_{state.lower()}.png',
-    }
+    product_data = None
+    
+    # Open the CSV file that contains product data
+    with open('dataset/product_details.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['item_name'].lower() == food_item.lower() and row['state'].lower() == state.lower():
+                product_data = {
+                    'name': row['item_name'],
+                    'state': row['state'],
+                    'price': row['latest_price'],
+                    'price_change': row.get('price_change', 'N/A'),  # Add price change if available
+                    'highest_price': row.get('highest_price', 'N/A'),  # Add highest price if available
+                    'lowest_price': row.get('lowest_price', 'N/A'),  # Add lowest price if available
+                    'unusual_prices': [],  # Add logic for unusual prices if available
+                    'future_trend_chart': f'predict_future_trend_{state.lower()}.pka',
+                    'unusual_trend_chart1': f'detect_unusual_trend1_{state.lower()}.pka',
+                    'price_comparison_chart': f'price_comparison_across_states_{state.lower()}.png',
+                }
+                break
+    
+    # If product_data is None, return a default or error message
+    if not product_data:
+        product_data = {
+            'name': food_item,
+            'state': state,
+            'price': 'Data not found',
+            'price_change': 'N/A',
+            'highest_price': 'N/A',
+            'lowest_price': 'N/A',
+            'unusual_prices': [],
+            'future_trend_chart': '',
+            'unusual_trend_chart1': '',
+            'price_comparison_chart': '',
+        }
+    
+    return product_data
 
 if __name__ == "__main__":
     app.run(debug=True)
