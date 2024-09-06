@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product['name'] }} Details</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
         body {
             background-color: #f9f9f9;
@@ -28,19 +28,6 @@
 
         .product-header h1 {
             font-size: 28px;
-        }
-
-        .state-select {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .state-select select {
-            padding: 5px;
-            background-color: #ffffff;
-            color: #333333;
-            border: 1px solid #cccccc;
-            border-radius: 5px;
         }
 
         .trend-section {
@@ -96,71 +83,6 @@
         th {
             background-color: #f2f2f2;
         }
-
-        .navbar {
-            background-color: #1f1f1f;
-            padding: 10px 0;
-            margin-bottom: 20px;
-        }
-
-        .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            background-color: #e0e0e0;
-        }
-
-        .navbar-logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar-logo img {
-            width: 50px;
-            height: auto;
-            margin-right: 1rem;
-        }
-
-        .navbar-links {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .navbar-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .navbar ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .navbar ul li {
-            display: inline;
-        }
-
-        .navbar ul li a {
-            color: black;
-            text-decoration: none;
-            padding: 10px 20px;
-            display: inline-block;
-        }
-
-        .navbar ul li a.active {
-            background-color: #ff9800;
-            border-radius: 4px;
-        }
-
-        .navbar ul li a:hover {
-            background-color: #ffb74d;
-            border-radius: 4px;
-        }
     </style>
 </head>
 
@@ -184,17 +106,51 @@
 
         </nav>
 
+        <div class="product-top">
+            <!-- Back Button on the Left -->
+            <div class="back-button">
+                <a href="{{ url_for('item') }}" style="text-decoration: none;">
+                    <button
+                        style="padding: 10px 20px; background-color: #333333; color: #ffffff; border: none; border-radius: 5px; cursor: pointer;">
+                        Back
+                    </button>
+                </a>
+            </div>
 
-        <!-- State Selector -->
-        <div class="state-select">
-            <label for="state">Select State:</label>
-            <select id="state" onchange="updateState()">
-                <option value="Johor" {% if product['state']=='Johor' %}selected{% endif %}>Johor</option>
-                <option value="Kedah" {% if product['state']=='Kedah' %}selected{% endif %}>Kedah</option>
-                <option value="Kelantan" {% if product['state']=='Kelantan' %}selected{% endif %}>Kelantan</option>
-                <option value="Melaka" {% if product['state']=='Melaka' %}selected{% endif %}>Melaka</option>
-                <!-- Add other states here -->
-            </select>
+            <!-- State Selector on the Right -->
+            <div class="state-select">
+                <label for="state">Select State:</label>
+                <select id="state" onchange="updateState()">
+                    <option value="Johor" {% if product['state']=='Johor' %}selected{% endif %}>Johor</option>
+                    <option value="Kedah" {% if product['state']=='Kedah' %}selected{% endif %}>Kedah</option>
+                    <option value="Kelantan" {% if product['state']=='Kelantan' %}selected{% endif %}>Kelantan
+                    </option>
+                    <option value="Melaka" {% if product['state']=='Melaka' %}selected{% endif %}>Melaka
+                    </option>
+                    <option value="Negeri Sembilan" {% if product['state']=='Negeri Sembilan' %}selected{% endif
+                        %}>Negeri Sembilan</option>
+                    <option value="Pahang" {% if product['state']=='Pahang' %}selected{% endif %}>Pahang
+                    </option>
+                    <option value="Perak" {% if product['state']=='Perak' %}selected{% endif %}>Perak</option>
+                    <option value="Perlis" {% if product['state']=='Perlis' %}selected{% endif %}>Perlis
+                    </option>
+                    <option value="Pulau Pinang" {% if product['state']=='Pulau Pinang' %}selected{% endif %}>
+                        Pulau Pinang</option>
+                    <option value="Sabah" {% if product['state']=='Sabah' %}selected{% endif %}>Sabah</option>
+                    <option value="Sarawak" {% if product['state']=='Sarawak' %}selected{% endif %}>Sarawak
+                    </option>
+                    <option value="Selangor" {% if product['state']=='Selangor' %}selected{% endif %}>Selangor
+                    </option>
+                    <option value="Terengganu" {% if product['state']=='Terengganu' %}selected{% endif %}>
+                        Terengganu</option>
+                    <option value="W.P. Kuala Lumpur" {% if product['state']=='W.P. Kuala Lumpur' %}selected{%
+                        endif %}>W.P. Kuala Lumpur</option>
+                    <option value="W.P. Labuan" {% if product['state']=='W.P. Labuan' %}selected{% endif %}>W.P.
+                        Labuan</option>
+                    <option value="W.P. Putrajaya" {% if product['state']=='W.P. Putrajaya' %}selected{% endif
+                        %}>W.P. Putrajaya</option>
+                </select>
+            </div>
         </div>
 
         <header class="product-header">
@@ -202,13 +158,16 @@
                 <h1>{{ product['name'] }}</h1>
                 <h2 id="state-name">
                     {{ product['state'] }}
-                    <span style="color: {% if product['price_change']|float < 0 %}red{% else %}rgb(74, 201, 74){% endif %};">
+                    <span
+                        style="color: {% if product['price_change']|float < 0 %}red{% else %}rgb(74, 201, 74){% endif %};">
                         ({{ product['price_change'] | float | round(2) }}%)
                     </span>
                 </h2>
             </div>
             <div>
-                <h1 id="price">RM{{ product['price'] | float | round(2) }}</h1>
+                <h1 id="price"
+                    style="color: {% if product['price_change']|float < 0 %}red{% else %}rgb(74, 201, 74){% endif %};">
+                    RM{{ product['price'] | float | round(2) }}</h1>
             </div>
         </header>
 

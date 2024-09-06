@@ -1,5 +1,6 @@
 from flask import Flask, render_template,request
 import csv
+import random
 
 app = Flask(__name__)
 
@@ -30,6 +31,10 @@ def index():
     }
     for item_name, data in aggregated_items.items()
 ]
+
+    # Randomly select 20 items from processed_items
+    if len(processed_items) > 20:
+        processed_items = random.sample(processed_items, 20)
     
     # Read the CSV file for percentage increments
     percentage_increments = {}
