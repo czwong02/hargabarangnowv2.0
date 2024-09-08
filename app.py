@@ -192,20 +192,38 @@ def get_product_data(food_item, state):
     with open('dataset/product_details.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            if row['item_name'].lower() == food_item.lower() and row['state'].lower() == state.lower():
-                product_data = {
-                    'name': row['item_name'],
-                    'state': row['state'],
-                    'price': row['latest_price'],
-                    'price_change': row.get('price_change', 'N/A'),  # Add price change if available
-                    'highest_price': row.get('highest_price', 'N/A'),  # Add highest price if available
-                    'lowest_price': row.get('lowest_price', 'N/A'),  # Add lowest price if available
-                    'unusual_prices': get_unusual_prices(food_item, state),  # Add logic for unusual prices if available
-                    'future_trend_chart': f'model/raw food/prediction/{food_item}/prediction_{state}.png',
-                    'unusual_trend_chart': f'model/raw food/anomaly/{food_item}/anomalies_{state}.png',
-                    'price_comparison_chart': f'model/raw food/average price/{food_item}.png',
-                }
-                break
+            if row['item_group'] == '1':
+
+                if row['item_name'].lower() == food_item.lower() and row['state'].lower() == state.lower():
+                    product_data = {
+                        'name': row['item_name'],
+                        'state': row['state'],
+                        'price': row['latest_price'],
+                        'price_change': row.get('price_change', 'N/A'),  # Add price change if available
+                        'highest_price': row.get('highest_price', 'N/A'),  # Add highest price if available
+                        'lowest_price': row.get('lowest_price', 'N/A'),  # Add lowest price if available
+                        'unusual_prices': get_raw_unusual_prices(food_item, state),  # Add logic for unusual prices if available
+                        'future_trend_chart': f'model/raw food/prediction/{food_item}/prediction_{state}.png',
+                        'unusual_trend_chart': f'model/raw food/anomaly/{food_item}/anomalies_{state}.png',
+                        'price_comparison_chart': f'model/raw food/average price/{food_item}.png',
+                    }
+                    break
+            else:
+
+                if row['item_name'].lower() == food_item.lower() and row['state'].lower() == state.lower():
+                    product_data = {
+                        'name': row['item_name'],
+                        'state': row['state'],
+                        'price': row['latest_price'],
+                        'price_change': row.get('price_change', 'N/A'),  # Add price change if available
+                        'highest_price': row.get('highest_price', 'N/A'),  # Add highest price if available
+                        'lowest_price': row.get('lowest_price', 'N/A'),  # Add lowest price if available
+                        'unusual_prices': get_processed_unusual_prices(food_item, state),  # Add logic for unusual prices if available
+                        'future_trend_chart': f'model/processed food/prediction/{food_item}/prediction_{state}.png',
+                        'unusual_trend_chart': f'model/processed food/anomaly/{food_item}/anomalies_{state}.png',
+                        'price_comparison_chart': f'model/processed food/average price/{food_item}.png',
+                    }
+                    break
     
     # If product_data is None, return a default or error message
     if not product_data:
@@ -224,50 +242,26 @@ def get_product_data(food_item, state):
     
     return product_data
 
-# def apply_anomaly_model(food_item, state):
-
-#     model = joblib.load(f'model/raw food/{food_item}/{food_item}_{state}.pka')
-#     data = pd.read_csv(f'dataset/raw food/complete data/{food_item}/{state}.csv')
-
-#     # Ensure data has 'price' column
-#     if 'price' not in data.columns:
-#         raise ValueError('The dataset must contain a "price" column.')
-    
-#     # Prepare data for prediction
-#     price_values = data['price'].values.reshape(-1, 1)
-    
-#     # Detect anomalies
-#     anomaly_scores = -model.score_samples(price_values)
-#     threshold = np.percentile(anomaly_scores, 90)  # Example threshold
-#     anomalies = anomaly_scores > threshold  # Anomalies are where the score exceeds the threshold
-    
-#     # Visualize results
-#     plt.figure(figsize=(10, 6))
-#     plt.plot(data['date'], data['price'], label='Original Data')
-#     plt.scatter(data['date'][anomalies], data['price'][anomalies], color='red', label='Anomalies')
-#     plt.xlabel('Date')
-#     plt.ylabel('Price')
-#     plt.title(f'Anomaly Detection for {food_item} in {state}')
-#     plt.legend()
-
-#     # Save the plot to an in-memory bytes buffer
-#     buf = io.BytesIO()
-#     plt.savefig(buf, format='png')  # Save the plot as PNG in the buffer
-#     buf.seek(0)  # Rewind the buffer to the beginning
-
-#     # Close the plot to free up memory
-#     plt.close()
-
-#     # Return the in-memory bytes object containing the image data
-#     return buf
-
-def get_unusual_prices(food_item, state):
+def get_raw_unusual_prices(food_item, state):
     # Custom logic to identify unusual prices using your anomaly detection models
     # This function could load a model and apply it to detect anomalies
     # For now, we'll return an empty list
     unusual_prices = []
     
     with open(f'dataset/raw food/anomalies/{food_item}/anomalies_{state}.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            unusual_prices.append({'date': row['date'], 'price': row['price']}) 
+
+    return unusual_prices
+
+def get_processed_unusual_prices(food_item, state):
+    # Custom logic to identify unusual prices using your anomaly detection models
+    # This function could load a model and apply it to detect anomalies
+    # For now, we'll return an empty list
+    unusual_prices = []
+    
+    with open(f'dataset/processed food/anomalies/{food_item}/anomalies_{state}.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             unusual_prices.append({'date': row['date'], 'price': row['price']}) 
