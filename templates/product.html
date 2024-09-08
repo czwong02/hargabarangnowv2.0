@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product['name'] }} Details</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         body {
             background-color: #f9f9f9;
@@ -82,6 +84,106 @@
 
         th {
             background-color: #f2f2f2;
+        }
+
+        .trend-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+        
+        .history-price {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        /* Price container */
+        .price-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        /* Price icons */
+        .price-icon {
+            font-size: 50px;
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.5s ease;
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: -webkit-linear-gradient(45deg, #f3ec78, #af4261);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 20px;
+            margin-top: 10px;
+            transition: color 0.5s ease;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            display: none;
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .price-container:hover .tooltip {
+            display: block;
+        }
+        
+        .price-container:hover .price-icon {
+            transform: scale(1.2);
+        }
+        
+        /* Dynamic Bars */
+        .bar-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-top: 10px;
+        }
+        
+        .animated-bar {
+            animation: growBar 1s ease-out forwards;
+        }
+        
+        @keyframes growBar {
+            from { width: 0; }
+            to { width: 80px; }
+        }
+        
+        /* Reflection Effects */
+        .animated-bar-reflection {
+            transform: scaleY(-1);
+            opacity: 0.1;
+            filter: blur(5px);
+        }
+        
+        /* Shadow and reflection */
+        .price-icon {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .price-bar-reflection {
+            position: absolute;
+            top: 50px;
         }
     </style>
 </head>
@@ -175,7 +277,7 @@
         <section class="trend-section">
             <h2>Predict Future Trend</h2>
             <div class="chart-container">
-                <img id="future-trend-chart" src="{{ url_for('static', filename=product['future_trend_chart']) }}"
+                <img style="width: 80%;" id="future-trend-chart" src="{{ url_for('static', filename=product['future_trend_chart']) }}"
                     alt="Predict Future Trend">
             </div>
         </section>
@@ -184,8 +286,8 @@
         <section class="trend-section">
             <h2>Detect Unusual Trend</h2>
             <div class="chart-container">
-                <img id="unusual-trend-chart1" src="{{ url_for('static', filename=product['unusual_trend_chart1']) }}"
-                    alt="Detect Unusual Trend 1">
+                <img id="unusual-trend-chart1" src="{{ url_for('static', filename=product['unusual_trend_chart']) }}"
+                    alt="Detect Unusual Trend">
             </div>
             <div class="history-price">
                 <h3>Unusual Price</h3>
@@ -199,7 +301,7 @@
                     <tbody id="unusual-price-list">
                         {% for price in product['unusual_prices'] %}
                         <tr>
-                            <td>{{ price['date'] | float | round(2) }}</td>
+                            <td>{{ price['date'] }}</td>
                             <td>{{ price['price'] | float | round(2) }}</td>
                         </tr>
                         {% endfor %}
@@ -212,8 +314,52 @@
         <section class="trend-section">
             <h2>History Price</h2>
             <div class="history-price">
-                <p id="highest-price">Highest Price: RM{{ product['highest_price'] | float | round(2) }}</p>
-                <p id="lowest-price">Lowest Price: RM{{ product['lowest_price'] | float | round(2) }}</p>
+                <!-- Highest Price with gradient, animation and hover tooltip -->
+                <div class="price-container" id="highest-price-container">
+                    <i class="fas fa-arrow-up price-icon" style="background: linear-gradient(to right, #ff512f, #dd2476);"></i>
+                    <p id="highest-price" class="gradient-text">
+                        RM{{ product['highest_price'] | float | round(2) }}
+                    </p>
+                    <div class="tooltip">
+                        Highest price recorded this month
+                    </div>
+                </div>
+                
+                <!-- Dynamic bar with reflection and animation -->
+                <div class="bar-container">
+                    <svg class="price-bar" width="120" height="40">
+                        <!-- Bar for highest price -->
+                        <rect class="animated-bar" width="80" height="10" x="10" y="5" fill="url(#grad1)"></rect>
+                        <!-- Bar for lowest price -->
+                        <rect class="animated-bar" width="40" height="10" x="10" y="25" fill="url(#grad2)"></rect>
+                    </svg>
+                    <!-- Reflections and shadow effects -->
+                    <svg class="price-bar-reflection" width="120" height="40">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:rgb(255,81,47);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgb(221,36,118);stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:rgb(72,219,251);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgb(0,100,148);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect class="animated-bar-reflection" width="80" height="10" x="10" y="5" fill="url(#grad1)" style="opacity: 0.3;"></rect>
+                        <rect class="animated-bar-reflection" width="40" height="10" x="10" y="25" fill="url(#grad2)" style="opacity: 0.3;"></rect>
+                    </svg>
+                </div>
+        
+                <!-- Lowest Price with gradient, animation and hover tooltip -->
+                <div class="price-container" id="lowest-price-container">
+                    <i class="fas fa-arrow-down price-icon" style="background: linear-gradient(to right, #00c6ff, #0072ff);"></i>
+                    <p id="lowest-price" class="gradient-text">
+                        RM{{ product['lowest_price'] | float | round(2) }}
+                    </p>
+                    <div class="tooltip">
+                        Lowest price recorded this month
+                    </div>
+                </div>
             </div>
         </section>
 

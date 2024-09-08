@@ -1,6 +1,7 @@
 from flask import Flask, render_template,request
 import csv
 import random
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -66,6 +67,7 @@ def index():
     
     raw_food_items = []
     processed_food_items = []
+    item_groups = defaultdict(list)
 
     # Read the CSV file and classify food items as raw or processed
     with open('dataset/all premise latest price.csv', newline='') as csvfile:
@@ -87,11 +89,38 @@ def index():
                 'growth': growth
             }
 
+            # Group items by item name for random selection later
+            item_groups[item].append(item_data)
+
             # Classify into raw food and processed food
             if item_category == 'BARANGAN SEGAR':  # Example category for raw food
                 raw_food_items.append(item_data)
             elif item_category == 'BARANGAN BERBUNGKUS':  # Processed food or other categories
                 processed_food_items.append(item_data)
+
+    def select_unique_items(item_list):
+        selected_items = []
+        grouped_by_item = defaultdict(list)
+
+        # Group items by their names and premises
+        for item_data in item_list:
+            item_name = item_data['item']
+            premise = item_data['premise']
+            grouped_by_item[item_name].append(item_data)
+
+        # For each item, select up to 5 unique items with different premises
+        for item_name, group in grouped_by_item.items():
+            unique_premises = {item['premise']: item for item in group}  # Remove duplicates by premise
+            selected_items += random.sample(list(unique_premises.values()), min(5, len(unique_premises)))
+
+        
+        return selected_items
+    
+    
+    # Select random 5 items with unique premises for itemAll, raw_food_items, and processed_food_items
+    itemAll = select_unique_items(itemAll)
+    raw_food_items = select_unique_items(raw_food_items)
+    processed_food_items = select_unique_items(processed_food_items)
 
     all_unique_items = list(set([item['item'] for item in raw_food_items + processed_food_items]))
 
@@ -171,10 +200,10 @@ def get_product_data(food_item, state):
                     'price_change': row.get('price_change', 'N/A'),  # Add price change if available
                     'highest_price': row.get('highest_price', 'N/A'),  # Add highest price if available
                     'lowest_price': row.get('lowest_price', 'N/A'),  # Add lowest price if available
-                    'unusual_prices': [],  # Add logic for unusual prices if available
-                    'future_trend_chart': f'predict_future_trend_{state.lower()}.pka',
-                    'unusual_trend_chart1': f'detect_unusual_trend1_{state.lower()}.pka',
-                    'price_comparison_chart': f'price_comparison_across_states_{state.lower()}.png',
+                    'unusual_prices': get_unusual_prices(food_item, state),  # Add logic for unusual prices if available
+                    'future_trend_chart': f'model/raw food/prediction/{food_item}/prediction_{state}.png',
+                    'unusual_trend_chart': f'model/raw food/anomaly/{food_item}/anomalies_{state}.png',
+                    'price_comparison_chart': f'model/raw food/average price/{food_item}.png',
                 }
                 break
     
@@ -189,11 +218,61 @@ def get_product_data(food_item, state):
             'lowest_price': 'N/A',
             'unusual_prices': [],
             'future_trend_chart': '',
-            'unusual_trend_chart1': '',
+            'unusual_trend_chart': '',
             'price_comparison_chart': '',
         }
     
     return product_data
+
+# def apply_anomaly_model(food_item, state):
+
+#     model = joblib.load(f'model/raw food/{food_item}/{food_item}_{state}.pka')
+#     data = pd.read_csv(f'dataset/raw food/complete data/{food_item}/{state}.csv')
+
+#     # Ensure data has 'price' column
+#     if 'price' not in data.columns:
+#         raise ValueError('The dataset must contain a "price" column.')
+    
+#     # Prepare data for prediction
+#     price_values = data['price'].values.reshape(-1, 1)
+    
+#     # Detect anomalies
+#     anomaly_scores = -model.score_samples(price_values)
+#     threshold = np.percentile(anomaly_scores, 90)  # Example threshold
+#     anomalies = anomaly_scores > threshold  # Anomalies are where the score exceeds the threshold
+    
+#     # Visualize results
+#     plt.figure(figsize=(10, 6))
+#     plt.plot(data['date'], data['price'], label='Original Data')
+#     plt.scatter(data['date'][anomalies], data['price'][anomalies], color='red', label='Anomalies')
+#     plt.xlabel('Date')
+#     plt.ylabel('Price')
+#     plt.title(f'Anomaly Detection for {food_item} in {state}')
+#     plt.legend()
+
+#     # Save the plot to an in-memory bytes buffer
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format='png')  # Save the plot as PNG in the buffer
+#     buf.seek(0)  # Rewind the buffer to the beginning
+
+#     # Close the plot to free up memory
+#     plt.close()
+
+#     # Return the in-memory bytes object containing the image data
+#     return buf
+
+def get_unusual_prices(food_item, state):
+    # Custom logic to identify unusual prices using your anomaly detection models
+    # This function could load a model and apply it to detect anomalies
+    # For now, we'll return an empty list
+    unusual_prices = []
+    
+    with open(f'dataset/raw food/anomalies/{food_item}/anomalies_{state}.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            unusual_prices.append({'date': row['date'], 'price': row['price']}) 
+
+    return unusual_prices
 
 if __name__ == "__main__":
     app.run(debug=True)
