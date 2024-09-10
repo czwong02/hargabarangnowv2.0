@@ -1,9 +1,14 @@
-from flask import Flask, render_template,request
+from flask import Flask, render_template,request, redirect, url_for
 import csv
 import random
 from collections import defaultdict
 
 app = Flask(__name__)
+
+@app.route('/')
+def home():
+    # Redirect to the /index route
+    return redirect(url_for('index'))
 
 @app.route('/index')
 def index():
